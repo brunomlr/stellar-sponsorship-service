@@ -54,7 +54,7 @@ The Stellar Sponsorship Service enables wallets to sponsor Stellar base reserves
 
 ```
 ┌──────────────┐    POST /v1/sign     ┌──────────────────┐    Horizon API     ┌─────────────┐
-│              │ ───────────────────→  │                  │ ─────────────────→  │   Stellar   │
+│              │ ───────────────────→ │                  │ ─────────────────→ │   Stellar   │
 │   Wallets    │    (API Key Auth)    │   Go API Server  │                    │   Network   │
 │              │ ←─────────────────── │                  │ ←───────────────── │             │
 └──────────────┘    Signed XDR        └──────────────────┘                    └─────────────┘
@@ -74,12 +74,12 @@ The Stellar Sponsorship Service enables wallets to sponsor Stellar base reserves
 
 **Components:**
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| API Server | Go 1.25, chi/v5 | Transaction signing, API key management, admin API |
-| Dashboard | Next.js 15, TypeScript | Admin UI for managing API keys and viewing logs |
-| Database | PostgreSQL 16 | API keys, transaction logs |
-| Stellar SDK | go-stellar-sdk | XDR parsing, transaction building, signing, Horizon queries |
+| Component   | Technology             | Purpose                                                     |
+| ----------- | ---------------------- | ----------------------------------------------------------- |
+| API Server  | Go 1.25, chi/v5        | Transaction signing, API key management, admin API          |
+| Dashboard   | Next.js 15, TypeScript | Admin UI for managing API keys and viewing logs             |
+| Database    | PostgreSQL 16          | API keys, transaction logs                                  |
+| Stellar SDK | go-stellar-sdk         | XDR parsing, transaction building, signing, Horizon queries |
 
 ---
 
@@ -173,31 +173,31 @@ curl http://localhost:8080/v1/health
 
 ### API Server (.env)
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `STELLAR_NETWORK` | Yes | — | `testnet` or `mainnet` |
-| `SIGNING_SECRET_KEY` | Yes | — | Stellar secret key (S...) used to co-sign transactions |
-| `MASTER_FUNDING_PUBLIC_KEY` | Yes | — | Stellar public key (G...) of the master funding account |
-| `DATABASE_URL` | Yes | — | PostgreSQL connection string |
-| `GOOGLE_CLIENT_ID` | Yes | — | Google OAuth 2.0 Client ID |
-| `GOOGLE_ALLOWED_DOMAIN` | Yes | — | Google Workspace domain for admin auth |
-| `GOOGLE_ALLOWED_EMAILS` | Yes | — | Comma-separated authorized admin emails |
-| `PORT` | No | `8080` | Server port |
-| `HORIZON_URL` | No | Auto | Custom Horizon URL |
-| `LOG_LEVEL` | No | `info` | `debug`, `info`, `warn`, `error` |
-| `CORS_ORIGINS` | No | — | Comma-separated allowed CORS origins |
+| Variable                    | Required | Default | Description                                             |
+| --------------------------- | -------- | ------- | ------------------------------------------------------- |
+| `STELLAR_NETWORK`           | Yes      | —       | `testnet` or `mainnet`                                  |
+| `SIGNING_SECRET_KEY`        | Yes      | —       | Stellar secret key (S...) used to co-sign transactions  |
+| `MASTER_FUNDING_PUBLIC_KEY` | Yes      | —       | Stellar public key (G...) of the master funding account |
+| `DATABASE_URL`              | Yes      | —       | PostgreSQL connection string                            |
+| `GOOGLE_CLIENT_ID`          | Yes      | —       | Google OAuth 2.0 Client ID                              |
+| `GOOGLE_ALLOWED_DOMAIN`     | Yes      | —       | Google Workspace domain for admin auth                  |
+| `GOOGLE_ALLOWED_EMAILS`     | Yes      | —       | Comma-separated authorized admin emails                 |
+| `PORT`                      | No       | `8080`  | Server port                                             |
+| `HORIZON_URL`               | No       | Auto    | Custom Horizon URL                                      |
+| `LOG_LEVEL`                 | No       | `info`  | `debug`, `info`, `warn`, `error`                        |
+| `CORS_ORIGINS`              | No       | —       | Comma-separated allowed CORS origins                    |
 
 ### Dashboard (dashboard/.env)
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `NEXT_PUBLIC_API_URL` | Yes | URL of the API server |
-| `NEXT_PUBLIC_STELLAR_NETWORK` | Yes | `testnet` or `mainnet` |
-| `NEXTAUTH_URL` | Yes | Dashboard base URL |
-| `NEXTAUTH_SECRET` | Yes | Generate with `openssl rand -base64 32` |
-| `GOOGLE_CLIENT_ID` | Yes | Google OAuth Client ID |
-| `GOOGLE_CLIENT_SECRET` | Yes | Google OAuth Client Secret |
-| `GOOGLE_ALLOWED_DOMAIN` | Yes | Google Workspace domain |
+| Variable                      | Required | Description                             |
+| ----------------------------- | -------- | --------------------------------------- |
+| `NEXT_PUBLIC_API_URL`         | Yes      | URL of the API server                   |
+| `NEXT_PUBLIC_STELLAR_NETWORK` | Yes      | `testnet` or `mainnet`                  |
+| `NEXTAUTH_URL`                | Yes      | Dashboard base URL                      |
+| `NEXTAUTH_SECRET`             | Yes      | Generate with `openssl rand -base64 32` |
+| `GOOGLE_CLIENT_ID`            | Yes      | Google OAuth Client ID                  |
+| `GOOGLE_CLIENT_SECRET`        | Yes      | Google OAuth Client Secret              |
+| `GOOGLE_ALLOWED_DOMAIN`       | Yes      | Google Workspace domain                 |
 
 ### Key Concepts
 
@@ -212,9 +212,11 @@ curl http://localhost:8080/v1/health
 ### Public Endpoints
 
 #### `GET /v1/info`
+
 Returns service info (network, supported operations).
 
 #### `GET /v1/health`
+
 Health check with service status and metrics.
 
 ### Wallet Endpoints (API Key Auth)
@@ -222,29 +224,31 @@ Health check with service status and metrics.
 Authentication: `Authorization: Bearer <api-key>`
 
 #### `POST /v1/sign`
+
 Sign a transaction. The request body contains the unsigned transaction XDR. The service validates and co-signs it.
 
 #### `GET /v1/usage`
+
 Returns the API key's current usage, budget, and limits.
 
 ### Admin Endpoints (Google OAuth)
 
 Authentication: Google OAuth session cookie via the dashboard.
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/v1/admin/api-keys` | List all API keys |
-| `GET` | `/v1/admin/api-keys/{id}` | Get API key details |
-| `POST` | `/v1/admin/api-keys` | Create new API key |
-| `PATCH` | `/v1/admin/api-keys/{id}` | Update API key settings (name, allowed operations, rate limits, expiration) |
-| `POST` | `/v1/admin/api-keys/{id}/regenerate` | Regenerate API key secret |
-| `DELETE` | `/v1/admin/api-keys/{id}` | Revoke API key |
-| `POST` | `/v1/admin/api-keys/{id}/activate` | Activate a pending API key |
-| `POST` | `/v1/admin/api-keys/{id}/fund` | Build funding transaction |
-| `POST` | `/v1/admin/api-keys/{id}/fund/submit` | Submit signed funding transaction |
-| `POST` | `/v1/admin/api-keys/{id}/sweep` | Sweep funds from sponsor account |
-| `GET` | `/v1/admin/transactions` | List transaction logs |
-| `GET` | `/v1/admin/transactions/{id}/check` | Check on-chain submission status |
+| Method   | Path                                  | Description                                                                 |
+| -------- | ------------------------------------- | --------------------------------------------------------------------------- |
+| `GET`    | `/v1/admin/api-keys`                  | List all API keys                                                           |
+| `GET`    | `/v1/admin/api-keys/{id}`             | Get API key details                                                         |
+| `POST`   | `/v1/admin/api-keys`                  | Create new API key                                                          |
+| `PATCH`  | `/v1/admin/api-keys/{id}`             | Update API key settings (name, allowed operations, rate limits, expiration) |
+| `POST`   | `/v1/admin/api-keys/{id}/regenerate`  | Regenerate API key secret                                                   |
+| `DELETE` | `/v1/admin/api-keys/{id}`             | Revoke API key                                                              |
+| `POST`   | `/v1/admin/api-keys/{id}/activate`    | Activate a pending API key                                                  |
+| `POST`   | `/v1/admin/api-keys/{id}/fund`        | Build funding transaction                                                   |
+| `POST`   | `/v1/admin/api-keys/{id}/fund/submit` | Submit signed funding transaction                                           |
+| `POST`   | `/v1/admin/api-keys/{id}/sweep`       | Sweep funds from sponsor account                                            |
+| `GET`    | `/v1/admin/transactions`              | List transaction logs                                                       |
+| `GET`    | `/v1/admin/transactions/{id}/check`   | Check on-chain submission status                                            |
 
 ---
 
@@ -252,40 +256,40 @@ Authentication: Google OAuth session cookie via the dashboard.
 
 ### api_keys
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID | Primary key |
-| `name` | VARCHAR(255) | Display name |
-| `key_hash` | VARCHAR(64) | SHA-256 hash of the API key |
-| `key_prefix` | VARCHAR(20) | Visible prefix (e.g., `sk_live_abc1...`) |
-| `sponsor_account` | VARCHAR(56) | Stellar public key of the sponsor account (nullable) |
-| `xlm_budget` | BIGINT | Budget in stroops (1 XLM = 10,000,000 stroops) |
-| `allowed_operations` | JSONB | Allowed operation types (e.g., `["CREATE_ACCOUNT", "CHANGE_TRUST"]`) |
-| `allowed_source_accounts` | JSONB | Optional allowlist of source accounts |
-| `rate_limit_max` | INTEGER | Max requests per window (default: 100) |
-| `rate_limit_window` | INTEGER | Window in seconds (default: 60) |
-| `status` | ENUM | `pending_funding`, `active`, `revoked` |
-| `expires_at` | TIMESTAMPTZ | Expiration timestamp |
-| `created_at` | TIMESTAMPTZ | Creation timestamp |
-| `updated_at` | TIMESTAMPTZ | Last update timestamp |
+| Column                    | Type         | Description                                                          |
+| ------------------------- | ------------ | -------------------------------------------------------------------- |
+| `id`                      | UUID         | Primary key                                                          |
+| `name`                    | VARCHAR(255) | Display name                                                         |
+| `key_hash`                | VARCHAR(64)  | SHA-256 hash of the API key                                          |
+| `key_prefix`              | VARCHAR(20)  | Visible prefix (e.g., `sk_live_abc1...`)                             |
+| `sponsor_account`         | VARCHAR(56)  | Stellar public key of the sponsor account (nullable)                 |
+| `xlm_budget`              | BIGINT       | Budget in stroops (1 XLM = 10,000,000 stroops)                       |
+| `allowed_operations`      | JSONB        | Allowed operation types (e.g., `["CREATE_ACCOUNT", "CHANGE_TRUST"]`) |
+| `allowed_source_accounts` | JSONB        | Optional allowlist of source accounts                                |
+| `rate_limit_max`          | INTEGER      | Max requests per window (default: 100)                               |
+| `rate_limit_window`       | INTEGER      | Window in seconds (default: 60)                                      |
+| `status`                  | ENUM         | `pending_funding`, `active`, `revoked`                               |
+| `expires_at`              | TIMESTAMPTZ  | Expiration timestamp                                                 |
+| `created_at`              | TIMESTAMPTZ  | Creation timestamp                                                   |
+| `updated_at`              | TIMESTAMPTZ  | Last update timestamp                                                |
 
 ### transaction_logs
 
 Transaction logs serve as an audit trail and observability layer. Every signing request is recorded — both successful and rejected. The service also tracks on-chain submission status by querying Horizon, so admins can see whether signed transactions were actually submitted to the network. Note that XLM budget enforcement is on-chain; these logs are for visibility, not accounting.
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID | Primary key |
-| `api_key_id` | UUID | Foreign key to `api_keys` |
-| `transaction_hash` | VARCHAR(64) | Stellar transaction hash (null if rejected) |
-| `transaction_xdr` | TEXT | Transaction XDR |
-| `operations` | JSONB | Operation types in the transaction |
-| `source_account` | VARCHAR(56) | Transaction source account |
-| `status` | ENUM | `signed`, `rejected` |
-| `rejection_reason` | VARCHAR(255) | Reason if rejected |
-| `submission_status` | ENUM | `confirmed`, `not_found` |
-| `reserves_locked` | INTEGER | Number of base reserves locked |
-| `created_at` | TIMESTAMPTZ | Creation timestamp |
+| Column              | Type         | Description                                 |
+| ------------------- | ------------ | ------------------------------------------- |
+| `id`                | UUID         | Primary key                                 |
+| `api_key_id`        | UUID         | Foreign key to `api_keys`                   |
+| `transaction_hash`  | VARCHAR(64)  | Stellar transaction hash (null if rejected) |
+| `transaction_xdr`   | TEXT         | Transaction XDR                             |
+| `operations`        | JSONB        | Operation types in the transaction          |
+| `source_account`    | VARCHAR(56)  | Transaction source account                  |
+| `status`            | ENUM         | `signed`, `rejected`                        |
+| `rejection_reason`  | VARCHAR(255) | Reason if rejected                          |
+| `submission_status` | ENUM         | `confirmed`, `not_found`                    |
+| `reserves_locked`   | INTEGER      | Number of base reserves locked              |
+| `created_at`        | TIMESTAMPTZ  | Creation timestamp                          |
 
 ### Migrations
 
@@ -318,12 +322,12 @@ The verifier (`internal/stellar/verifier.go`) enforces these rules before signin
 
 ### Prometheus Metrics (`/metrics`)
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `sponsorship_transactions_total` | Counter | Transactions signed/rejected |
-| `sponsorship_request_duration_seconds` | Histogram | Request latency |
-| `sponsorship_sponsor_balance` | Gauge | Per-account XLM balance |
-| `sponsorship_active_api_keys` | Gauge | Number of active API keys |
+| Metric                                 | Type      | Description                  |
+| -------------------------------------- | --------- | ---------------------------- |
+| `sponsorship_transactions_total`       | Counter   | Transactions signed/rejected |
+| `sponsorship_request_duration_seconds` | Histogram | Request latency              |
+| `sponsorship_sponsor_balance`          | Gauge     | Per-account XLM balance      |
+| `sponsorship_active_api_keys`          | Gauge     | Number of active API keys    |
 
 ### Health Endpoint (`GET /v1/health`)
 
