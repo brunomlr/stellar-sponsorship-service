@@ -24,7 +24,7 @@ The Stellar Sponsorship Service enables wallets to sponsor Stellar base reserves
 - Each API key gets its own dedicated Stellar sponsor account with a specific XLM budget
 - Budget enforcement is based on the sponsor account's actual on-chain balance (queried from Horizon), not a database counter.
 - The database tracks all signing requests (approved and rejected) as an audit trail and records whether signed transactions were actually submitted to the network, but the on-chain balance is the source of truth for whether a sponsor can cover new reserves.
-- A single signing key is added as a signer on all sponsor accounts
+- Each sponsor account has two signers: the service's **signing key** (used for co-signing wallet transactions) and the **master funding key** (used for admin operations like funding and sweeps). The sponsor account's own master weight is set to 0, so it cannot sign for itself.
 - Transactions are validated against strict rules before co-signing (operation allowlists, sponsorship blocks, no XLM transfers)
 
 ### Signing Flow
