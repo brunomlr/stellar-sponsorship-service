@@ -1,0 +1,9 @@
+[X] sponsor account funding should have its reserves sponsored
+[] option to merge account back
+[X] option to regenerate api key
+[?] proper secret account handling?
+[?] key storage in admin
+
+
+sponsorship weight vs payment
+signer sponsor master

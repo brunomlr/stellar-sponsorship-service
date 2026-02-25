@@ -1,0 +1,53 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+!dashboard/.env.example
+!docker/.env.example
+dashboard/.env
+docker/.env
+wallet-demo/.env
+
+# Go build artifacts
+bin/
+server
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go test artifacts
+*.out
+coverage/
+*.test
+*.prof
+
+# Node / Next.js
+node_modules/
+.next/
+dashboard/node_modules/
+dashboard/.next/
+dashboard/out/
+wallet-demo/node_modules/
+wallet-demo/.next/
+wallet-demo/out/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+pgdata/
+
+# Logs
+*.log
+
+# Claude
+.claude/

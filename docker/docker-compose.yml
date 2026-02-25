@@ -1,0 +1,38 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      STELLAR_NETWORK: testnet
+      SIGNING_SECRET_KEY: ${SIGNING_SECRET_KEY}
+      MASTER_FUNDING_PUBLIC_KEY: ${MASTER_FUNDING_PUBLIC_KEY}
+      DATABASE_URL: postgres://sponsorship:sponsorship@db:5432/sponsorship?sslmode=disable
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:3001"
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_ALLOWED_DOMAIN: ${GOOGLE_ALLOWED_DOMAIN}
+      GOOGLE_ALLOWED_EMAILS: ${GOOGLE_ALLOWED_EMAILS}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: sponsorship
+      POSTGRES_PASSWORD: sponsorship
+      POSTGRES_DB: sponsorship
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sponsorship"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
