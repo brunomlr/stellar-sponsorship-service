@@ -51,3 +51,6 @@ pgdata/
 
 # Claude
 .claude/
+
+# Todo
+todo
